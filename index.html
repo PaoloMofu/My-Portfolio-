@@ -290,6 +290,13 @@
   .about .tags{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.4rem;}
   .about .tags span{font-size:.76rem;color:var(--violet);border:1px solid var(--line-strong);
     padding:.32rem .7rem;border-radius:999px;}
+  .about .powered{margin-top:1.3rem;display:flex;align-items:center;gap:1.15rem 1.4rem;flex-wrap:wrap;}
+  .about .powered .lbl{font-size:.74rem;color:var(--faint);}
+  .about .powered .logo{display:inline-flex;align-items:center;gap:.42rem;}
+  .about .powered .logo svg{height:19px;width:auto;flex:none;}
+  .about .powered .wm{font-size:.98rem;letter-spacing:-0.01em;line-height:1;}
+  .about .powered .claude .wm{font-family:Georgia,'Times New Roman',serif;font-weight:500;color:#F4F4F1;}
+  .about .powered .hf .wm{font-family:'Montserrat',sans-serif;font-weight:600;color:#D3F84E;}
 
   /* ---------- testimonials / clients ---------- */
   .tag-head{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:800;
@@ -676,7 +683,25 @@
           <p style="margin-top:1rem">I'm Jan Paolo Violanda, a video editor focused on retention and rhythm. Over the last few years I've edited hundreds of videos for creators and brands, building AI-assisted pipelines that keep quality high while turnaround stays fast.</p>
           <p>The approach blends traditional craft — timing, contrast, sound — with modern tooling for the repetitive work. More iterations, sharper storytelling, content that performs.</p>
           <div class="tags">
-            <span>Premiere Pro</span><span>CapCut</span><span>Claude</span><span>Higgsfield</span>
+            <span>Premiere Pro</span><span>CapCut</span>
+          </div>
+          <div class="powered">
+            <span class="lbl">Powered by</span>
+            <span class="logo claude">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#D97757" stroke-width="3.2" stroke-linecap="round" aria-hidden="true">
+                <path d="M20 20 L20 37"/><path d="M20 20 L24.7 28.8"/><path d="M20 20 L35 28.5"/>
+                <path d="M20 20 L30 20.9"/><path d="M20 20 L35 12.8"/><path d="M20 20 L29.7 6.1"/>
+                <path d="M20 20 L20 4"/><path d="M20 20 L15 11.3"/><path d="M20 20 L5.3 11.5"/>
+                <path d="M20 20 L10.3 22.6"/><path d="M20 20 L9.1 33"/>
+              </svg>
+              <span class="wm">Claude</span>
+            </span>
+            <span class="logo hf">
+              <svg viewBox="0 0 40 30" fill="none" stroke="#D3F84E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 22 C4 10 16 6 16 16 C16 26 28 26 26 15 C24 6 36 8 34 20"/>
+              </svg>
+              <span class="wm">Higgsfield</span>
+            </span>
           </div>
         </div>
       </div>
