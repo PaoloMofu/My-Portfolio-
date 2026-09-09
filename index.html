@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jan Paolo Violanda — AI Video Editor</title>
+<meta name="description" content="Jan Paolo Violanda edits short-form, YouTube long-form, and brand video with AI-assisted workflows — fast turnaround, human taste." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0D0F14;
+    --surface:#141824;
+    --surface-2:#1B2030;
+    --line:rgba(196,157,255,0.14);
+    --line-strong:rgba(196,157,255,0.28);
+    --text:#FFFFFF;
+    --muted:#B0B3C5;
+    --faint:rgba(176,179,197,0.62);
+    --primary:#8A5CF6;
+    --deep:#4B2EC4;
+    --violet:#C49DFF;
+    --ease:cubic-bezier(.6,0,.2,1);
+    --pad:clamp(1.25rem, 5vw, 5rem);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{background:var(--bg);-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Poppins',system-ui,-apple-system,sans-serif;
+    font-size:16px;line-height:1.7;overflow-x:hidden;
+  }
+  img,video{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;}
+  ::selection{background:var(--primary);color:#fff;}
+  :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:4px;}
+
+  h1,h2,h3{font-family:'Montserrat',system-ui,sans-serif;font-weight:800;letter-spacing:-0.03em;margin:0;}
+  h2{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.08;}
+  h3{font-size:1.05rem;font-weight:700;letter-spacing:-0.01em;}
+  p{margin:0;}
+
+  /* ---------- beams background (canvas) ---------- */
+  .aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:var(--bg);}
+  .aurora canvas{position:absolute;inset:0;width:100%;height:100%;filter:blur(6px);}
+  .aurora .pulse{position:absolute;inset:0;background:rgba(13,15,20,.04);
+    backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+    animation:beamPulse 10s ease-in-out infinite;}
+  .aurora .grain{
+    position:absolute;inset:-50%;opacity:.10;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .aurora::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(13,15,20,.05) 0%, rgba(13,15,20,.45) 62%, rgba(13,15,20,.72) 100%);}
+  @keyframes beamPulse{0%,100%{opacity:.3;}50%{opacity:.7;}}
+
+  /* ---------- layout ---------- */
+  .wrap{position:relative;z-index:1;}
+  .section{max-width:var(--maxw);margin:0 auto;padding:clamp(5rem,10vw,8.5rem) var(--pad);}
+  .section-head{max-width:52ch;margin-bottom:clamp(2.5rem,4.5vw,3.75rem);}
+  .section-head p{color:var(--muted);margin-top:.9rem;}
+
+  /* ---------- nav ---------- */
+  .nav{position:sticky;top:0;z-index:40;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:rgba(13,15,20,.6);border-bottom:1px solid var(--line);}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:.85rem var(--pad);
+    display:flex;align-items:center;gap:2rem;}
+  .brand{display:flex;align-items:center;gap:.7rem;font-family:'Montserrat',sans-serif;
+    font-weight:700;font-size:.95rem;letter-spacing:-0.01em;}
+  .mark{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    font-family:'Montserrat',sans-serif;font-weight:800;font-size:.8rem;color:#fff;
+    background:linear-gradient(150deg,var(--primary),var(--deep));
+    box-shadow:0 6px 16px -6px rgba(138,92,246,.6);}
+  .nav-links{display:flex;gap:1.6rem;margin-left:auto;font-size:.9rem;color:var(--muted);}
+  .nav-links a{transition:color .2s ease;}
+  .nav-links a:hover{color:var(--text);}
+  .nav .btn{margin-left:1.6rem;}
+  @media(max-width:820px){.nav-links{display:none;}.nav .btn{margin-left:auto;}}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:.5rem;
+    padding:.72rem 1.35rem;border-radius:999px;font-size:.9rem;font-weight:500;
+    border:1px solid var(--line-strong);white-space:nowrap;
+    transition:transform .18s var(--ease), background-color .2s ease, border-color .2s ease, filter .2s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(0);}
+  .btn--solid{background:linear-gradient(150deg,var(--primary),var(--deep));color:#fff;border-color:transparent;
+    box-shadow:0 12px 30px -12px rgba(138,92,246,.7);}
+  .btn--solid:hover{filter:brightness(1.09);}
+  .btn--ghost{background:rgba(255,255,255,.02);}
+  .btn--ghost:hover{border-color:var(--violet);color:#fff;}
+
+  /* ---------- hero ---------- */
+  .hero{max-width:var(--maxw);margin:0 auto;padding:clamp(3.5rem,8vw,6rem) var(--pad) clamp(3rem,6vw,4.5rem);}
+  .rec{display:inline-flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--faint);
+    font-variant-numeric:tabular-nums;margin-bottom:1.6rem;}
+  .rec i{width:8px;height:8px;border-radius:50%;background:var(--primary);
+    box-shadow:0 0 0 0 rgba(138,92,246,.55);animation:rec 2s ease-out infinite;}
+  @keyframes rec{0%{box-shadow:0 0 0 0 rgba(138,92,246,.5);}100%{box-shadow:0 0 0 12px rgba(138,92,246,0);}}
+  .hero h1{font-size:clamp(2.4rem,6vw,4.1rem);line-height:1.03;max-width:15ch;}
+  .hero .lede{color:var(--muted);max-width:52ch;margin-top:1.4rem;font-size:1.02rem;}
+  .hero .cta{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2rem;}
+
+  /* ---------- brand lockup + sparkles (front-page logo) ---------- */
+  .lockup{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:.5rem 0 2.5rem;margin-bottom:clamp(2rem,5vw,3.5rem);
+    border-bottom:1px solid var(--line);}
+  .lockup .sparkles{position:absolute;left:50%;top:-1.5rem;transform:translateX(-50%);
+    width:min(700px,94vw);height:calc(100% + 1.5rem);
+    -webkit-mask-image:radial-gradient(62% 68% at 50% 40%, #000 18%, transparent 80%);
+            mask-image:radial-gradient(62% 68% at 50% 40%, #000 18%, transparent 80%);}
+  .lockup__inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+  .lockup__mark{font-family:'Montserrat',sans-serif;font-weight:800;
+    font-size:clamp(3rem,9vw,5rem);line-height:1;letter-spacing:-0.045em;
+    background:linear-gradient(150deg,var(--violet),var(--primary) 55%,var(--deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 10px 34px rgba(138,92,246,.45));}
+  .lockup__word{font-family:'Montserrat',sans-serif;font-weight:700;
+    font-size:clamp(1rem,2.6vw,1.45rem);letter-spacing:.22em;text-transform:uppercase;}
+  .lockup__role{font-size:.7rem;letter-spacing:.34em;text-transform:uppercase;color:var(--violet);}
+  .lockup__lines{position:relative;z-index:1;width:min(560px,88vw);height:6px;margin-top:1.3rem;}
+  .lockup__lines .l{position:absolute;top:0;left:50%;transform:translateX(-50%);}
+  .lockup__lines .l1{width:75%;height:2px;filter:blur(3px);background:linear-gradient(90deg,transparent,var(--primary),transparent);}
+  .lockup__lines .l2{width:75%;height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);}
+  .lockup__lines .l3{width:26%;height:5px;filter:blur(4px);background:linear-gradient(90deg,transparent,var(--violet),transparent);}
+  .lockup__lines .l4{width:26%;height:1px;background:linear-gradient(90deg,transparent,var(--violet),transparent);}
+  @media(max-width:640px){.lockup__word{letter-spacing:.15em;}}
+
+  /* ---------- hero editor panel ---------- */
+  .editor{margin-top:clamp(2.5rem,5vw,3.5rem);border:1px solid var(--line);border-radius:14px;
+    background:#0f1118;overflow:hidden;box-shadow:0 50px 90px -45px rgba(0,0,0,.65);}
+  .editor__bar{display:flex;align-items:center;gap:.9rem;padding:.55rem .85rem;
+    border-bottom:1px solid var(--line);background:#0b0d12;font-size:.72rem;}
+  .editor__bar .dots{display:flex;gap:6px;}
+  .editor__bar .dots i{width:9px;height:9px;border-radius:50%;background:#2b3040;}
+  .editor__file{color:var(--muted);}
+  .editor__tabs{margin-left:auto;display:flex;gap:.15rem;}
+  .editor__tabs b{font-weight:500;padding:.24rem .6rem;border-radius:6px;color:var(--faint);}
+  .editor__tabs b.on{background:rgba(138,92,246,.18);color:var(--violet);}
+
+  .editor__monitor{position:relative;background:#000;aspect-ratio:16/6;max-height:264px;
+    display:grid;place-items:center;overflow:hidden;}
+  .editor__monitor video{width:100%;height:100%;object-fit:cover;}
+  .editor__ph{position:absolute;inset:0;display:grid;place-items:center;background:#0a0c11;}
+  .editor__ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:blur(2px) brightness(.5) saturate(1.1);}
+  .editor__ph::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 45%, rgba(138,92,246,.28), transparent 60%);}
+  .editor__ph svg{position:relative;z-index:1;width:46px;height:46px;fill:rgba(255,255,255,.92);
+    filter:drop-shadow(0 6px 16px rgba(0,0,0,.6));}
+  .editor__monitor .mlabel{position:absolute;left:.8rem;top:.55rem;z-index:2;
+    font-size:.64rem;color:var(--faint);letter-spacing:.02em;}
+  .editor__transport{position:absolute;left:0;right:0;bottom:0;z-index:2;
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.45rem .8rem;
+    background:linear-gradient(0deg,rgba(5,6,9,.92),transparent);
+    font-size:.68rem;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .editor__transport .ctrls{display:flex;gap:.6rem;color:rgba(255,255,255,.85);}
+  .editor__transport svg{width:12px;height:12px;fill:currentColor;}
+
+  .editor__tl{background:#0d0f15;padding:.55rem 0 .7rem;position:relative;--th:58px;}
+  .tl-ruler{display:flex;justify-content:space-between;
+    margin-left:var(--th);padding:0 .7rem .35rem;
+    font-size:.64rem;color:var(--faint);font-variant-numeric:tabular-nums;
+    border-bottom:1px solid var(--line);}
+  .tl-track{display:flex;align-items:stretch;height:32px;
+    border-bottom:1px solid rgba(255,255,255,.035);}
+  .tl-head{flex:0 0 var(--th);display:flex;align-items:center;gap:.3rem;padding-left:.65rem;
+    font-size:.64rem;color:var(--faint);border-right:1px solid var(--line);background:#0b0d12;}
+  .tl-head i{width:11px;height:8px;border-radius:2px;background:rgba(196,157,255,.35);}
+  .tl-lane{position:relative;flex:1;}
+  .clip{position:absolute;top:4px;bottom:4px;border-radius:4px;overflow:hidden;
+    font-size:.58rem;color:#fff;display:flex;align-items:center;padding:0 .35rem;
+    white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.14);}
+  .clip--video{background:linear-gradient(180deg,#7a57e6,#4b2ec4);padding-top:9px;}
+  .clip--video::before{content:"";position:absolute;left:0;right:0;top:0;height:9px;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.16) 0 7px,rgba(0,0,0,.15) 7px 14px);}
+  .clip--title{background:repeating-linear-gradient(45deg,#8a5cf6 0 7px,#6f4ce0 7px 14px);
+    justify-content:center;font-weight:600;letter-spacing:.08em;}
+  .clip--audio{background:#1f7360;}
+  .clip--audio::after{content:"";position:absolute;inset:3px 5px;opacity:.55;
+    background:repeating-linear-gradient(90deg,#bff3e4 0 1px,transparent 1px 4px);
+    -webkit-mask:radial-gradient(50% 120% at 50% 50%,#000 60%,transparent);
+            mask:radial-gradient(50% 120% at 50% 50%,#000 60%,transparent);}
+  .tl-playhead{position:absolute;top:1.15rem;bottom:.35rem;left:calc(var(--th) + 24%);
+    width:2px;background:var(--violet);pointer-events:none;z-index:3;}
+  .tl-playhead::before{content:"";position:absolute;top:-1px;left:-4px;
+    border:5px solid transparent;border-top-color:var(--violet);}
+  .editor__monitor .editor__ph[hidden]{display:none;}
+
+  /* ---------- stats ---------- */
+  .stats{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad) clamp(3.5rem,7vw,5rem);
+    display:flex;flex-wrap:wrap;gap:clamp(2rem,6vw,4.5rem);}
+  .stat b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.9rem;letter-spacing:-0.03em;display:block;}
+  .stat span{color:var(--faint);font-size:.85rem;}
+
+  /* ---------- audience strip ---------- */
+  .strip{border-block:1px solid var(--line);background:rgba(20,24,36,.4);}
+  .strip ul{max-width:var(--maxw);margin:0 auto;padding:1.15rem var(--pad);
+    display:flex;flex-wrap:wrap;gap:1.4rem 2.6rem;list-style:none;
+    color:var(--faint);font-size:.86rem;}
+
+  /* ---------- reel galleries ---------- */
+  .work-grid{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(260px,30vw,330px);
+    gap:1.6rem;overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+    margin:0 calc(var(--pad) * -1);padding:.25rem var(--pad) 1.5rem;
+    scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent;}
+  .work-grid::-webkit-scrollbar{height:6px;}
+  .work-grid::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:6px;}
+  .card{scroll-snap-align:start;border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    background:var(--surface);transition:transform .25s var(--ease), border-color .25s ease;}
+  .card:hover{transform:translateY(-5px);border-color:var(--line-strong);}
+  .reel{display:block;width:100%;text-align:left;}
+  .card .media{position:relative;aspect-ratio:9/16;background:#0b0d13;overflow:hidden;}
+  .card .media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transition:transform .4s var(--ease);}
+  .card:hover .media img{transform:scale(1.05);}
+  .card .media::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0) 45%),
+              radial-gradient(120% 80% at 50% 120%, rgba(75,46,196,.4), transparent 58%);}
+  .card .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+    width:60px;height:60px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--primary),var(--deep));
+    box-shadow:0 12px 32px -8px rgba(138,92,246,.75);
+    transition:transform .2s var(--ease);}
+  .card:hover .play{transform:translate(-50%,-50%) scale(1.09);}
+  .card .play svg{width:22px;height:22px;fill:#fff;margin-left:3px;}
+  .card .foot{padding:1.1rem 1.25rem 1.35rem;}
+  .card .meta{font-size:.72rem;color:var(--faint);
+    display:flex;gap:.6rem;align-items:center;margin-bottom:.5rem;}
+  .card .meta i{width:4px;height:4px;border-radius:50%;background:var(--violet);}
+  .card p{color:var(--muted);font-size:.86rem;margin-top:.35rem;}
+  .scroll-hint{font-size:.74rem;color:var(--faint);margin-top:-.5rem;}
+
+  /* ---------- reel lightbox ---------- */
+  .lb{position:fixed;inset:0;z-index:80;display:none;place-items:center;padding:1.5rem;
+    background:rgba(9,10,14,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+  .lb.open{display:grid;}
+  .lb__stage{position:relative;width:min(94vw,460px);}
+  .lb__frame{position:relative;aspect-ratio:9/16;
+    border-radius:18px;overflow:hidden;border:1px solid var(--line-strong);
+    box-shadow:0 40px 120px -20px rgba(0,0,0,.75), 0 0 60px -20px rgba(138,92,246,.4);background:#000;}
+  .lb__frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .lb__close{position:absolute;top:-2.6rem;right:0;font-size:.82rem;color:var(--muted);}
+  .lb__close:hover{color:#fff;}
+
+  /* ---------- what I do ---------- */
+  .rows{border-top:1px solid var(--line);}
+  .row{display:grid;grid-template-columns:minmax(180px,.9fr) 1.6fr;gap:1.5rem;
+    padding:1.35rem 0;border-bottom:1px solid var(--line);align-items:baseline;}
+  .row p{color:var(--muted);font-size:.92rem;}
+  @media(max-width:680px){.row{grid-template-columns:1fr;gap:.4rem;}}
+
+  /* ---------- process ---------- */
+  .steps{position:relative;padding-left:1.9rem;}
+  .steps::before{content:"";position:absolute;left:4px;top:.4rem;bottom:.4rem;width:2px;
+    background:linear-gradient(180deg,var(--primary),rgba(138,92,246,.05));}
+  .step{position:relative;padding:0 0 2.2rem;}
+  .step:last-child{padding-bottom:0;}
+  .step::before{content:"";position:absolute;left:-1.9rem;top:.45rem;width:10px;height:10px;
+    border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px rgba(138,92,246,.15);}
+  .step .when{font-size:.74rem;color:var(--faint);font-variant-numeric:tabular-nums;}
+  .step h3{margin:.15rem 0 .3rem;}
+  .step p{color:var(--muted);font-size:.92rem;max-width:48ch;}
+
+  /* ---------- about ---------- */
+  .about{display:grid;grid-template-columns:minmax(240px,.85fr) 1.15fr;gap:clamp(1.5rem,4vw,3rem);align-items:center;}
+  @media(max-width:820px){.about{grid-template-columns:1fr;}}
+  .about .panel{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:4/5;
+    background:radial-gradient(120% 120% at 30% 20%, #1c1430, #0b0d13);
+    border:1px solid var(--line);display:grid;place-items:center;}
+  .about .panel video,.about .panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+  .about .panel video.ready{display:block;}
+  .about .panel video.ready ~ .jp{opacity:0;}
+  .about .panel .jp{font-family:'Montserrat',sans-serif;font-weight:800;font-size:6rem;
+    letter-spacing:-0.04em;transition:opacity .4s ease;
+    background:linear-gradient(150deg,var(--violet),var(--primary));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .about .body p+p{margin-top:1rem;}
+  .about .body p{color:var(--muted);}
+  .about .tags{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.4rem;}
+  .about .tags span{font-size:.76rem;color:var(--violet);border:1px solid var(--line-strong);
+    padding:.32rem .7rem;border-radius:999px;}
+
+  /* ---------- testimonials / clients ---------- */
+  .tag-head{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:800;
+    font-style:italic;text-transform:uppercase;letter-spacing:.04em;
+    font-size:clamp(1.5rem,3.4vw,2.1rem);color:#fff;
+    background:linear-gradient(120deg,var(--primary),var(--deep));
+    padding:.35rem .9rem .4rem;border-radius:6px;
+    box-shadow:0 12px 34px -12px rgba(138,92,246,.6);}
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.9rem;
+    margin-top:clamp(3rem,6vw,4.5rem);}
+  @media(max-width:900px){.quotes{grid-template-columns:1fr;max-width:460px;gap:4.5rem;}}
+  .tcard{position:relative;background:var(--violet);color:#171b28;
+    padding:1.9rem 1.75rem;border-radius:34px;margin-bottom:3.75rem;
+    box-shadow:0 30px 60px -30px rgba(138,92,246,.5);}
+  .tcard:nth-child(1){border-bottom-left-radius:6px;}
+  .tcard:nth-child(2){border-top-right-radius:6px;}
+  .tcard:nth-child(3){border-bottom-right-radius:6px;}
+  .tcard blockquote{margin:0;font-size:.95rem;line-height:1.6;font-weight:500;}
+  .tcard blockquote::before{content:"\201C";}
+  .tcard blockquote::after{content:"\201D";}
+  .tcard figcaption{display:flex;align-items:flex-end;justify-content:flex-end;
+    min-height:64px;margin-top:1.4rem;}
+  .tcard .avatar{position:absolute;left:1.25rem;bottom:-3rem;
+    width:104px;height:104px;border-radius:50%;object-fit:cover;
+    border:5px solid var(--bg);box-shadow:0 0 0 2px var(--primary), 0 16px 30px -10px rgba(0,0,0,.6);}
+  .tcard .name{text-align:right;font-family:'Montserrat',sans-serif;font-weight:800;
+    text-transform:uppercase;letter-spacing:-0.01em;line-height:1.12;
+    font-size:1.05rem;color:#12141d;}
+
+  /* ---------- cta + contact form ---------- */
+  .final{max-width:var(--maxw);margin:0 auto clamp(4rem,8vw,6rem);padding:clamp(2.5rem,6vw,4rem) var(--pad);
+    border:1px solid var(--line-strong);border-radius:22px;
+    background:radial-gradient(120% 160% at 0% 0%, rgba(138,92,246,.22), transparent 55%), var(--surface);}
+  .final-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(2rem,5vw,4rem);align-items:start;}
+  @media(max-width:820px){.final-grid{grid-template-columns:1fr;}}
+  .final h2{max-width:16ch;}
+  .final .intro p{color:var(--muted);margin-top:1rem;max-width:38ch;}
+  .final .direct{margin-top:1.5rem;font-size:.86rem;color:var(--faint);}
+  .final .direct a{color:var(--violet);}
+  .final .direct a:hover{color:#fff;}
+
+  .form{display:grid;gap:1rem;}
+  .form .row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  @media(max-width:520px){.form .row2{grid-template-columns:1fr;}}
+  .field{display:grid;gap:.4rem;}
+  .field label{font-size:.76rem;color:var(--muted);letter-spacing:.01em;}
+  .field input,.field select,.field textarea{
+    font:inherit;font-size:.92rem;color:var(--text);
+    background:rgba(13,15,20,.55);border:1px solid var(--line-strong);border-radius:10px;
+    padding:.7rem .85rem;width:100%;
+    transition:border-color .2s ease, background-color .2s ease;}
+  .field textarea{min-height:120px;resize:vertical;}
+  .field input:focus,.field select:focus,.field textarea:focus{
+    outline:none;border-color:var(--violet);background:rgba(13,15,20,.8);}
+  .field select{appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23B0B3C5' stroke-width='1.6'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.2rem;}
+  .form .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+  .form button{margin-top:.25rem;justify-self:start;}
+  .form .note{font-size:.82rem;min-height:1.2em;}
+  .form .note.ok{color:#7ee0b8;}
+  .form .note.err{color:#ff8f8f;}
+  .form.sent .field,.form.sent button{opacity:.5;pointer-events:none;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:2rem var(--pad);
+    display:flex;flex-wrap:wrap;gap:1.2rem 2rem;align-items:center;color:var(--faint);font-size:.84rem;}
+  .foot-inner .tagline{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--muted);letter-spacing:-0.01em;}
+  .foot-inner .social{margin-left:auto;display:flex;gap:1.3rem;}
+  .foot-inner .social a{transition:color .2s ease;}
+  .foot-inner .social a:hover{color:var(--text);}
+  .copyright{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad) 2rem;font-size:.76rem;color:var(--faint);}
+
+  /* ---------- load reveal (one orchestrated moment) ---------- */
+  .reveal{opacity:0;transform:translateY(14px);}
+  .reveal.in{opacity:1;transform:none;transition:opacity .7s ease, transform .8s var(--ease);}
+  .reveal.d1{transition-delay:.08s;}
+  .reveal.d2{transition-delay:.16s;}
+  .reveal.d3{transition-delay:.24s;}
+  .reveal.d4{transition-delay:.32s;}
+
+  @media (prefers-reduced-motion:reduce){
+    .aurora .pulse{animation:none;opacity:.5;}
+    .rec i{animation:none;}
+    .reveal{opacity:1;transform:none;transition:none;}
+    .btn:hover,.card:hover{transform:none;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="aurora" aria-hidden="true">
+    <canvas id="beams"></canvas>
+    <div class="pulse"></div>
+    <div class="grain"></div>
+  </div>
+
+  <div class="wrap">
+
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="#top" class="brand"><span class="mark">JP</span> Jan Paolo Violanda</a>
+        <div class="nav-links">
+          <a href="#work">Work</a>
+          <a href="#services">Services</a>
+          <a href="#process">Process</a>
+          <a href="#about">About</a>
+        </div>
+        <a href="#contact" class="btn btn--solid">Start a project</a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="lockup reveal">
+        <canvas class="sparkles" id="sparkles"></canvas>
+        <div class="lockup__inner">
+          <span class="lockup__mark">JP</span>
+          <span class="lockup__word">Jan Paolo Violanda</span>
+          <span class="lockup__role">AI Video Editor</span>
+        </div>
+        <div class="lockup__lines" aria-hidden="true">
+          <span class="l l1"></span><span class="l l2"></span>
+          <span class="l l3"></span><span class="l l4"></span>
+        </div>
+      </div>
+      <p class="rec reveal d1"><i></i> REC &nbsp;·&nbsp; 3840×2160 &nbsp;·&nbsp; 24fps</p>
+      <h1 class="reveal d1">Raw footage in. Video worth watching out.</h1>
+      <p class="lede reveal d2">I make AI-assisted reels — script, voiceover, b-roll, and captions — cut for retention and turned around fast. Long-form and brand edits on request.</p>
+      <div class="cta reveal d3">
+        <a href="#contact" class="btn btn--solid">Start a project</a>
+        <a href="#work" class="btn btn--ghost">View recent work</a>
+      </div>
+
+      <div class="editor reveal d4" aria-hidden="true">
+        <div class="editor__bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="editor__file">Sequence 01 — Edited</span>
+          <span class="editor__tabs"><b>Import</b><b class="on">Edit</b><b>Export</b></span>
+        </div>
+
+        <div class="editor__monitor">
+          <span class="mlabel">Program: Sequence 01</span>
+          <video src="videos/showreel.mp4" poster="videos/showreel-poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
+          <div class="editor__ph">
+            <img src="https://i.ytimg.com/vi/Y00w7YVv93s/maxresdefault.jpg" alt="" />
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="editor__transport">
+            <span>00:00:05:06</span>
+            <span class="ctrls">
+              <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zm-3.5 6L4 6v12z"/></svg>
+            </span>
+            <span>00:02:40:00</span>
+          </div>
+        </div>
+
+        <div class="editor__tl">
+          <div class="tl-ruler"><span>00:00</span><span>00:15</span><span>00:30</span><span>00:45</span><span>02:40</span></div>
+          <div class="tl-track">
+            <span class="tl-head">V2 <i></i></span>
+            <div class="tl-lane">
+              <div class="clip clip--title" style="left:44%;width:20%;">HIKING</div>
+            </div>
+          </div>
+          <div class="tl-track">
+            <span class="tl-head">V1 <i></i></span>
+            <div class="tl-lane">
+              <div class="clip clip--video" style="left:2%;width:40%;">Tikal.mp4</div>
+              <div class="clip clip--video" style="left:43%;width:34%;">AntiguaArch.mp4</div>
+              <div class="clip clip--video" style="left:78%;width:20%;">Dock.mp4</div>
+            </div>
+          </div>
+          <div class="tl-track">
+            <span class="tl-head">A1 <i></i></span>
+            <div class="tl-lane">
+              <div class="clip clip--audio" style="left:2%;width:52%;"></div>
+              <div class="clip clip--audio" style="left:55%;width:43%;"></div>
+            </div>
+          </div>
+          <div class="tl-playhead"></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="stat"><b>500+</b><span>videos delivered</span></div>
+      <div class="stat"><b>48h</b><span>to first rough cut</span></div>
+      <div class="stat"><b>30M+</b><span>views generated</span></div>
+    </section>
+
+    <div class="strip">
+      <ul>
+        <li>Creators</li><li>Startups</li><li>Agencies</li><li>Course founders</li><li>Podcasters</li>
+      </ul>
+    </div>
+
+    <section class="section" id="work">
+      <div class="section-head">
+        <h2>AI reels</h2>
+        <p>What I make most days now — short vertical edits with AI voiceover, b-roll, and captions, cut for the first three seconds. Tap to watch.</p>
+      </div>
+      <div class="work-grid">
+        <article class="card">
+          <button class="reel" data-yt="Y00w7YVv93s" aria-label="Play AI reel — Hook &amp; retention cut">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/Y00w7YVv93s/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/Y00w7YVv93s/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Hook &amp; retention cut</h3>
+              <p>Fast open, tight captions, pacing tuned to hold the scroll.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="owhbiftk3GQ" aria-label="Play AI reel — Faceless AI voiceover">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/owhbiftk3GQ/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/owhbiftk3GQ/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Faceless AI voiceover</h3>
+              <p>Script to voice to visuals — a full reel with no camera.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="F_05P0vSvKc" aria-label="Play AI reel — B-roll &amp; motion">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/F_05P0vSvKc/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/F_05P0vSvKc/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>B-roll &amp; motion</h3>
+              <p>AI-sourced b-roll and kinetic text carrying the story.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="L5WQYkCmlZ4" aria-label="Play AI reel — Story beat">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/L5WQYkCmlZ4/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/L5WQYkCmlZ4/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Story beat</h3>
+              <p>AI narration and visuals timed to one clean payoff.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="zaTCcHR20Vo" aria-label="Play AI reel — Explainer cut">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/zaTCcHR20Vo/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/zaTCcHR20Vo/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Explainer cut</h3>
+              <p>Dense idea broken into a fast, captioned vertical.</p>
+            </div>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="edits">
+      <div class="section-head">
+        <h2>YouTube &amp; Instagram edits</h2>
+        <p>Client reels for Shorts and Instagram — hook, pacing, captions, and sound design. Tap to watch.</p>
+      </div>
+      <div class="work-grid">
+        <article class="card">
+          <button class="reel" data-yt="XKR2goY2uqQ" aria-label="Play edit — Hook-first cut">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/XKR2goY2uqQ/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/XKR2goY2uqQ/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube / Instagram</div>
+              <h3>Hook-first cut</h3>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="bIW6lMZ7yt0" aria-label="Play edit — Caption-driven edit">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/bIW6lMZ7yt0/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/bIW6lMZ7yt0/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube / Instagram</div>
+              <h3>Caption-driven edit</h3>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="fFI2XPj6F2o" aria-label="Play edit — B-roll &amp; sound design">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/fFI2XPj6F2o/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/fFI2XPj6F2o/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube / Instagram</div>
+              <h3>B-roll &amp; sound design</h3>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="0-6vt5vOllE" aria-label="Play edit — Punch-in &amp; pacing">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/0-6vt5vOllE/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/0-6vt5vOllE/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube / Instagram</div>
+              <h3>Punch-in &amp; pacing</h3>
+            </div>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Reel player">
+      <div class="lb__stage">
+        <button class="lb__close" id="lbClose" type="button">Close ✕</button>
+        <div class="lb__frame" id="lbMount"></div>
+      </div>
+    </div>
+
+    <section class="section" id="services">
+      <div class="section-head">
+        <h2>What I do</h2>
+        <p>Full-service editing with an AI layer for the repetitive parts, so more time goes into judgment calls.</p>
+      </div>
+      <div class="rows">
+        <div class="row"><h3>Short-form editing</h3><p>Vertical edits with dynamic captions, zooms, and sound design tuned for the first three seconds.</p></div>
+        <div class="row"><h3>Long-form storytelling</h3><p>YouTube and documentary-style edits — structure, b-roll, graphics, and mix.</p></div>
+        <div class="row"><h3>AI workflow setup</h3><p>Custom pipelines for auto-transcription, rough assembly, and b-roll generation.</p></div>
+        <div class="row"><h3>Podcast repurposing</h3><p>One recording into a full-episode edit plus 8–12 clip-ready moments.</p></div>
+        <div class="row"><h3>Ad creative</h3><p>Multiple hook and format variants from a single shoot for paid testing.</p></div>
+        <div class="row"><h3>Captions &amp; titles</h3><p>On-brand kinetic typography and frame-accurate subtitles in any language.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="process">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p>A predictable loop from footage to final export.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="when">00:00 — you</div><h3>Brief &amp; footage drop</h3><p>You share raw files and goals. I set up the project and run AI transcription.</p></div>
+        <div class="step"><div class="when">00:48 — me</div><h3>Rough cut</h3><p>Structure and pacing locked within 48 hours for your review.</p></div>
+        <div class="step"><div class="when">02:24 — me</div><h3>Polish</h3><p>Color, sound design, graphics, captions, and two revision rounds.</p></div>
+        <div class="step"><div class="when">03:12 — you</div><h3>Delivery</h3><p>Exports in every ratio you need, plus source files on request.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="about">
+        <div class="panel">
+          <video src="videos/about.mp4" poster="videos/about-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+          <span class="jp" aria-hidden="true">JP</span>
+        </div>
+        <div class="body">
+          <h2>Behind the cuts</h2>
+          <p style="margin-top:1rem">I'm Jan Paolo Violanda, a video editor focused on retention and rhythm. Over the last few years I've edited hundreds of videos for creators and brands, building AI-assisted pipelines that keep quality high while turnaround stays fast.</p>
+          <p>The approach blends traditional craft — timing, contrast, sound — with modern tooling for the repetitive work. More iterations, sharper storytelling, content that performs.</p>
+          <div class="tags">
+            <span>Premiere Pro</span><span>CapCut</span><span>AI workflows</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="clients">
+      <span class="tag-head">Clients :</span>
+      <div class="quotes">
+        <figure class="tcard">
+          <blockquote>Amazing edit! Paolo is a great editor and brings ideas to my business — he helps me create amazing ads for my social media.</blockquote>
+          <figcaption>
+            <img class="avatar" src="clients/anthony.jpg" alt="Anthony Del Rio" loading="lazy"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces'" />
+            <span class="name">Anthony<br>Del Rio</span>
+          </figcaption>
+        </figure>
+        <figure class="tcard">
+          <blockquote>Paolo gets pacing in a way most editors don't. Our retention held flat past the first month of reels — that never used to happen.</blockquote>
+          <figcaption>
+            <img class="avatar" src="clients/alex.jpg" alt="Alex Afanasiev" loading="lazy"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&h=240&fit=crop&crop=faces'" />
+            <span class="name">Alex<br>Afanasiev</span>
+          </figcaption>
+        </figure>
+        <figure class="tcard">
+          <blockquote>Incredible edits! Paolo isn't just a skilled editor — he's a real contributor to my business. His creative ideas lift every ad we run.</blockquote>
+          <figcaption>
+            <img class="avatar" src="clients/nora.jpg" alt="Nora Ashton" loading="lazy"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&h=240&fit=crop&crop=faces'" />
+            <span class="name">Nora<br>Ashton</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="final" id="contact">
+      <div class="final-grid">
+        <div class="intro">
+          <h2>Let's make something worth watching</h2>
+          <p>Tell me about your channel or campaign and I'll send back a plan, timeline, and quote within 24 hours.</p>
+          <p class="direct">Prefer email? <a href="mailto:janpaoloviolanda2@gmail.com">janpaoloviolanda2@gmail.com</a></p>
+        </div>
+
+        <form class="form" id="contactForm" action="https://formsubmit.co/janpaoloviolanda2@gmail.com" method="POST">
+          <div class="row2">
+            <div class="field">
+              <label for="cf-name">Your name</label>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="cf-type">What do you need?</label>
+            <select id="cf-type" name="project">
+              <option>AI reels</option>
+              <option>YouTube / Instagram edits</option>
+              <option>Long-form video</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cf-msg">Project details</label>
+            <textarea id="cf-msg" name="message" placeholder="Links, goals, volume, timeline…" required></textarea>
+          </div>
+
+          <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <input type="hidden" name="_subject" value="New project enquiry — janpaoloviolanda.com" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="" />
+
+          <button type="submit" class="btn btn--solid">Send message</button>
+          <p class="note" id="cf-note" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <div class="foot-inner">
+        <span class="brand"><span class="mark">JP</span> Jan Paolo Violanda</span>
+        <span class="tagline">Create. Automate. Elevate.</span>
+        <span class="social">
+          <a href="#">YouTube</a><a href="#">Instagram</a><a href="mailto:janpaoloviolanda2@gmail.com">Email</a>
+        </span>
+      </div>
+      <div class="copyright">© 2025 Jan Paolo Violanda. All rights reserved.</div>
+    </footer>
+
+  </div>
+
+  <script>
+    (function(){
+      var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+      // ---- hero load reveal ----
+      var items = document.querySelectorAll('.reveal');
+      if(reduce){
+        items.forEach(function(el){ el.classList.add('in'); });
+      } else {
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            items.forEach(function(el){ el.classList.add('in'); });
+          });
+        });
+      }
+
+      // ---- videos reveal only once they can play ----
+      document.querySelectorAll('video').forEach(function(v){
+        v.addEventListener('loadeddata', function(){
+          v.classList.add('ready');
+          var sr = v.closest('.showreel');
+          if(sr){ sr.classList.add('ready'); }
+          var mon = v.closest('.editor__monitor');
+          if(mon){ var ph = mon.querySelector('.editor__ph'); if(ph){ ph.hidden = true; } }
+        });
+      });
+
+      // ---- contact form (FormSubmit, no backend) ----
+      (function contact(){
+        var form = document.getElementById('contactForm');
+        var note = document.getElementById('cf-note');
+        if(!form) return;
+        var base = location.origin + location.pathname;
+
+        // show confirmation after a full-page-redirect submit
+        if(/[?&]sent=1(&|$)/.test(location.search)){
+          form.classList.add('sent');
+          note.className = 'note ok';
+          note.textContent = "Sent — I'll reply within 24 hours.";
+          history.replaceState(null, '', base + location.hash);
+        }
+
+        function nativeSubmit(){
+          form.querySelector('[name="_next"]').value = base + '?sent=1#contact';
+          HTMLFormElement.prototype.submit.call(form);           // bypass this listener
+        }
+
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          if(form.querySelector('.hp').value) return;            // spam bot
+          if(!form.checkValidity()){ form.reportValidity(); return; }
+          note.className = 'note';
+          note.textContent = 'Sending…';
+
+          fetch('https://formsubmit.co/ajax/janpaoloviolanda2@gmail.com', {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form)
+          })
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            if(data && String(data.success) === 'true'){
+              form.classList.add('sent');
+              note.className = 'note ok';
+              note.textContent = "Sent — I'll reply within 24 hours.";
+            } else {
+              nativeSubmit();                                    // fall back to redirect flow
+            }
+          })
+          .catch(function(){ nativeSubmit(); });
+        });
+      })();
+
+      // ---- AI reel lightbox (YouTube Shorts) ----
+      (function reels(){
+        var lb = document.getElementById('lb');
+        var mount = document.getElementById('lbMount');
+        var closeBtn = document.getElementById('lbClose');
+        if(!lb || !mount) return;
+
+        function open(id){
+          mount.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + id +
+            '?autoplay=1&rel=0&playsinline=1" title="AI reel" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+          lb.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+        function close(){
+          lb.classList.remove('open');
+          mount.innerHTML = '';
+          document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.reel[data-yt]').forEach(function(btn){
+          btn.addEventListener('click', function(){ open(btn.getAttribute('data-yt')); });
+        });
+        closeBtn.addEventListener('click', close);
+        lb.addEventListener('click', function(e){ if(e.target === lb) close(); });
+        document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+      })();
+
+      // ---- sparkles behind the front-page logo lockup ----
+      (function sparkles(){
+        var canvas = document.getElementById('sparkles');
+        if(!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if(!ctx) return;
+        var dpr = window.devicePixelRatio || 1;
+        var dots = [], W = 0, H = 0;
+
+        function spawn(){
+          return {
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: 0.4 + Math.random() * 1.1,
+            a: Math.random() * Math.PI * 2,
+            aSpeed: 0.006 + Math.random() * 0.022,
+            vy: -(0.03 + Math.random() * 0.13)
+          };
+        }
+        function size(){
+          var rect = canvas.getBoundingClientRect();
+          W = Math.max(1, rect.width); H = Math.max(1, rect.height);
+          canvas.width = W * dpr; canvas.height = H * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var count = Math.min(320, Math.round((W * H) / 1100));
+          dots = Array.from({length: count}, spawn);
+        }
+        function dot(d, o){
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(224,210,255,' + o + ')';
+          ctx.shadowColor = 'rgba(138,92,246,' + (o * 0.7) + ')';
+          ctx.shadowBlur = d.r > 1 ? 6 : 0;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+        function frame(){
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for(var i = 0; i < dots.length; i++){
+            var d = dots[i];
+            d.a += d.aSpeed;
+            d.y += d.vy;
+            if(d.y < -2){ d.y = H + 2; d.x = Math.random() * W; }
+            dot(d, 0.12 + (Math.sin(d.a) * 0.5 + 0.5) * 0.8);
+          }
+          requestAnimationFrame(frame);
+        }
+        size();
+        window.addEventListener('resize', size);
+        if(reduce){ dots.forEach(function(d){ dot(d, 0.7); }); }
+        else { frame(); }
+      })();
+
+      // ---- beams background (canvas), tuned to the brand purple ----
+      (function beams(){
+        var canvas = document.getElementById('beams');
+        if(!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if(!ctx) return;
+
+        var MIN_BEAMS = 20;
+        var INTENSITY = 1;            // strong
+        var list = [];
+        var W = 0, H = 0;            // logical (CSS) pixels
+
+        function rnd(){ return Math.random(); }
+
+        function makeBeam(w, h){
+          return {
+            x: rnd() * w * 1.5 - w * 0.25,
+            y: rnd() * h * 1.5 - h * 0.25,
+            width: 30 + rnd() * 60,
+            length: h * 2.5,
+            angle: -35 + rnd() * 10,
+            speed: 0.6 + rnd() * 1.2,
+            opacity: 0.12 + rnd() * 0.16,
+            hue: 250 + rnd() * 30,     // brand purple band
+            pulse: rnd() * Math.PI * 2,
+            pulseSpeed: 0.02 + rnd() * 0.03
+          };
+        }
+
+        function resize(){
+          var dpr = window.devicePixelRatio || 1;
+          W = window.innerWidth; H = window.innerHeight;
+          canvas.width = W * dpr;
+          canvas.height = H * dpr;
+          canvas.style.width = W + 'px';
+          canvas.style.height = H + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var total = Math.round(MIN_BEAMS * 1.5);
+          list = Array.from({length: total}, function(){ return makeBeam(W, H); });
+        }
+
+        function reset(beam, i, total){
+          var col = i % 3;
+          var spacing = W / 3;
+          beam.y = H + 100;
+          beam.x = col * spacing + spacing / 2 + (rnd() - 0.5) * spacing * 0.5;
+          beam.width = 100 + rnd() * 100;
+          beam.speed = 0.5 + rnd() * 0.4;
+          beam.hue = 250 + (i * 30) / total;
+          beam.opacity = 0.2 + rnd() * 0.1;
+        }
+
+        function draw(beam){
+          ctx.save();
+          ctx.translate(beam.x, beam.y);
+          ctx.rotate((beam.angle * Math.PI) / 180);
+          var o = beam.opacity * (0.8 + Math.sin(beam.pulse) * 0.2) * INTENSITY;
+          var g = ctx.createLinearGradient(0, 0, 0, beam.length);
+          g.addColorStop(0,   'hsla(' + beam.hue + ', 85%, 65%, 0)');
+          g.addColorStop(0.1, 'hsla(' + beam.hue + ', 85%, 65%, ' + (o * 0.5) + ')');
+          g.addColorStop(0.4, 'hsla(' + beam.hue + ', 85%, 65%, ' + o + ')');
+          g.addColorStop(0.6, 'hsla(' + beam.hue + ', 85%, 65%, ' + o + ')');
+          g.addColorStop(0.9, 'hsla(' + beam.hue + ', 85%, 65%, ' + (o * 0.5) + ')');
+          g.addColorStop(1,   'hsla(' + beam.hue + ', 85%, 65%, 0)');
+          ctx.fillStyle = g;
+          ctx.fillRect(-beam.width / 2, 0, beam.width, beam.length);
+          ctx.restore();
+        }
+
+        function frame(){
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.filter = 'blur(35px)';
+          var total = list.length;
+          list.forEach(function(beam, i){
+            beam.y -= beam.speed;
+            beam.pulse += beam.pulseSpeed;
+            if(beam.y + beam.length < -100) reset(beam, i, total);
+            draw(beam);
+          });
+          raf = requestAnimationFrame(frame);
+        }
+
+        var raf;
+        resize();
+        window.addEventListener('resize', resize);
+
+        if(reduce){
+          ctx.filter = 'blur(35px)';
+          list.forEach(function(beam, i){ draw(beam); });
+        } else {
+          frame();
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
