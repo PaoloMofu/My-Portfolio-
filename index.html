@@ -115,21 +115,16 @@
     -webkit-mask-image:radial-gradient(62% 68% at 50% 40%, #000 18%, transparent 80%);
             mask-image:radial-gradient(62% 68% at 50% 40%, #000 18%, transparent 80%);}
   .lockup__inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
-  .lockup__mark{font-family:'Montserrat',sans-serif;font-weight:800;
-    font-size:clamp(3rem,9vw,5rem);line-height:1;letter-spacing:-0.045em;
-    background:linear-gradient(150deg,var(--violet),var(--primary) 55%,var(--deep));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 10px 34px rgba(138,92,246,.45));}
-  .lockup__word{font-family:'Montserrat',sans-serif;font-weight:700;
-    font-size:clamp(1rem,2.6vw,1.45rem);letter-spacing:.22em;text-transform:uppercase;}
-  .lockup__role{font-size:.7rem;letter-spacing:.34em;text-transform:uppercase;color:var(--violet);}
+  .lockup__logo{width:min(360px,72vw);height:auto;
+    filter:drop-shadow(0 10px 34px rgba(138,92,246,.45)) drop-shadow(0 0 46px rgba(138,92,246,.3));}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0;}
   .lockup__lines{position:relative;z-index:1;width:min(560px,88vw);height:6px;margin-top:1.3rem;}
   .lockup__lines .l{position:absolute;top:0;left:50%;transform:translateX(-50%);}
   .lockup__lines .l1{width:75%;height:2px;filter:blur(3px);background:linear-gradient(90deg,transparent,var(--primary),transparent);}
   .lockup__lines .l2{width:75%;height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);}
   .lockup__lines .l3{width:26%;height:5px;filter:blur(4px);background:linear-gradient(90deg,transparent,var(--violet),transparent);}
   .lockup__lines .l4{width:26%;height:1px;background:linear-gradient(90deg,transparent,var(--violet),transparent);}
-  @media(max-width:640px){.lockup__word{letter-spacing:.15em;}}
 
   /* ---------- hero editor panel ---------- */
   .editor{margin-top:clamp(2.5rem,5vw,3.5rem);border:1px solid var(--line);border-radius:14px;
@@ -414,9 +409,8 @@
       <div class="lockup reveal">
         <canvas class="sparkles" id="sparkles"></canvas>
         <div class="lockup__inner">
-          <span class="lockup__mark">JP</span>
-          <span class="lockup__word">Jan Paolo Violanda</span>
-          <span class="lockup__role">AI Video Editor</span>
+          <img class="lockup__logo" src="brand guidlines/logo.png" alt="JP — Jan Paolo Violanda, AI Video Editor" />
+          <span class="sr-only">Jan Paolo Violanda — AI Video Editor</span>
         </div>
         <div class="lockup__lines" aria-hidden="true">
           <span class="l l1"></span><span class="l l2"></span>
@@ -442,7 +436,7 @@
           <span class="mlabel">Program: Sequence 01</span>
           <video src="videos/showreel.mp4" poster="videos/showreel-poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
           <div class="editor__ph">
-            <img src="https://i.ytimg.com/vi/Y00w7YVv93s/maxresdefault.jpg" alt="" />
+            <img src="brand guidlines/paolo.png" alt="" />
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
           </div>
           <div class="editor__transport">
@@ -569,6 +563,48 @@
               <div class="meta">Vertical <i></i> YouTube Shorts</div>
               <h3>Explainer cut</h3>
               <p>Dense idea broken into a fast, captioned vertical.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="gzwuTpWWlOQ" aria-label="Play AI reel — New AI reel">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/gzwuTpWWlOQ/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/gzwuTpWWlOQ/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Latest AI reel</h3>
+              <p>Newest short — AI voiceover, b-roll, and captions.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="IXW8Wj577t8" aria-label="Play AI reel — Another AI reel">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/IXW8Wj577t8/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/IXW8Wj577t8/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Another AI reel</h3>
+              <p>Short-form edit with AI visuals, voiceover, and captions.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="SOmeH27MvEk" aria-label="Play AI reel — More AI reels">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/SOmeH27MvEk/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/SOmeH27MvEk/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Fresh AI reel</h3>
+              <p>Vertical cut with AI voiceover, b-roll, and captions.</p>
             </div>
           </button>
         </article>
