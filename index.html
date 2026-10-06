@@ -207,6 +207,10 @@
   @media(min-width:1280px){.work-grid{margin-inline:calc((var(--maxw) - 1320px) / 2);width:auto;}}
   @media(max-width:900px){.work-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
   @media(max-width:560px){.work-grid{grid-template-columns:minmax(0,1fr);max-width:420px;}}
+  .work-rail{display:flex;gap:clamp(1.5rem,3vw,2.5rem);overflow-x:auto;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+    padding:.25rem 0 1.5rem;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent;}
+  .work-rail>.card{flex:0 0 min(413px,78vw);scroll-snap-align:start;}
   .card{border:1px solid var(--line);border-radius:18px;overflow:hidden;
     background:var(--surface);transition:transform .25s var(--ease), border-color .25s ease;}
   .card:hover{transform:translateY(-5px);border-color:var(--line-strong);}
@@ -492,9 +496,9 @@
     <section class="section" id="work">
       <div class="section-head">
         <h2>AI reels</h2>
-        <p>What I make most days now — short vertical edits with AI voiceover, b-roll, and captions, cut for the first three seconds. Tap to watch.</p>
+        <p>What I make most days now — short vertical edits with AI voiceover, b-roll, and captions, cut for the first three seconds. Swipe or scroll sideways, tap to watch.</p>
       </div>
-      <div class="work-grid">
+      <div class="work-rail">
         <article class="card">
           <button class="reel" data-yt="Y00w7YVv93s" aria-label="Play AI reel — Hook &amp; retention cut">
             <div class="media">
@@ -506,20 +510,6 @@
               <div class="meta">Vertical <i></i> YouTube Shorts</div>
               <h3>Hook &amp; retention cut</h3>
               <p>Fast open, tight captions, pacing tuned to hold the scroll.</p>
-            </div>
-          </button>
-        </article>
-        <article class="card">
-          <button class="reel" data-yt="owhbiftk3GQ" aria-label="Play AI reel — Faceless AI voiceover">
-            <div class="media">
-              <img src="https://i.ytimg.com/vi/owhbiftk3GQ/maxresdefault.jpg" alt="" loading="lazy"
-                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/owhbiftk3GQ/hqdefault.jpg'" />
-              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-            </div>
-            <div class="foot">
-              <div class="meta">Vertical <i></i> YouTube Shorts</div>
-              <h3>Faceless AI voiceover</h3>
-              <p>Script to voice to visuals — a full reel with no camera.</p>
             </div>
           </button>
         </article>
@@ -566,20 +556,6 @@
           </button>
         </article>
         <article class="card">
-          <button class="reel" data-yt="gzwuTpWWlOQ" aria-label="Play AI reel — New AI reel">
-            <div class="media">
-              <img src="https://i.ytimg.com/vi/gzwuTpWWlOQ/maxresdefault.jpg" alt="" loading="lazy"
-                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/gzwuTpWWlOQ/hqdefault.jpg'" />
-              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-            </div>
-            <div class="foot">
-              <div class="meta">Vertical <i></i> YouTube Shorts</div>
-              <h3>Latest AI reel</h3>
-              <p>Newest short — AI voiceover, b-roll, and captions.</p>
-            </div>
-          </button>
-        </article>
-        <article class="card">
           <button class="reel" data-yt="IXW8Wj577t8" aria-label="Play AI reel — Another AI reel">
             <div class="media">
               <img src="https://i.ytimg.com/vi/IXW8Wj577t8/maxresdefault.jpg" alt="" loading="lazy"
@@ -607,8 +583,95 @@
             </div>
           </button>
         </article>
+        <article class="card">
+          <button class="reel" data-yt="WqpJixzVOzg" aria-label="Play AI reel — Chinese BB">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/WqpJixzVOzg/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/WqpJixzVOzg/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Chinese BB</h3>
+              <p>AI voiceover, b-roll, and captions cut for retention.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="n0y2ZCapoik" aria-label="Play AI reel — Batch 004 — iteration B1H3">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/n0y2ZCapoik/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/n0y2ZCapoik/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Batch 004 — iteration B1H3</h3>
+              <p>AI voiceover, b-roll, and captions cut for retention.</p>
+            </div>
+          </button>
+        </article>
+        <article class="card">
+          <button class="reel" data-yt="LQD-M4JWMfw" aria-label="Play AI reel — Hook 2">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/LQD-M4JWMfw/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/LQD-M4JWMfw/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Hook 2</h3>
+              <p>AI voiceover, b-roll, and captions cut for retention.</p>
+            </div>
+          </button>
+        </article>
       </div>
     </section>
+
+    <section class="section" id="bloom">
+      <div class="section-head">
+        <h2>Bloom Doctor</h2>
+      </div>
+      <div class="work-rail">
+        <article class="card">
+          <button class="reel" data-yt="owhbiftk3GQ" aria-label="Play AI reel — Bloom Doctor">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/owhbiftk3GQ/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/owhbiftk3GQ/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Bloom Doctor</h3>
+              <p>AI voiceover, b-roll, and captions on a single story.</p>
+            </div>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="trucker">
+      <div class="section-head">
+        <h2>Trucker Protection</h2>
+      </div>
+      <div class="work-rail">
+        <article class="card">
+          <button class="reel" data-yt="gzwuTpWWlOQ" aria-label="Play AI reel — Trucker Protection">
+            <div class="media">
+              <img src="https://i.ytimg.com/vi/gzwuTpWWlOQ/maxresdefault.jpg" alt="" loading="lazy"
+                   onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/gzwuTpWWlOQ/hqdefault.jpg'" />
+              <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <div class="foot">
+              <div class="meta">Vertical <i></i> YouTube Shorts</div>
+              <h3>Trucker Protection</h3>
+              <p>AI voiceover, b-roll, and captions on a single story.</p>
+            </div>
+          </button>
+        </article>
+      </div>
+    </section>
+
 
     <section class="section" id="edits">
       <div class="section-head">
