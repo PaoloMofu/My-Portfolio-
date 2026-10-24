@@ -72,6 +72,8 @@
     display:flex;align-items:center;gap:2rem;}
   .brand{display:flex;align-items:center;gap:.7rem;font-family:'Montserrat',sans-serif;
     font-weight:700;font-size:.95rem;letter-spacing:-0.01em;}
+  .brand__logo{width:76px;height:auto;margin:-10px -6px -10px -10px;
+    filter:drop-shadow(0 4px 12px rgba(138,92,246,.45));}
   .mark{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
     font-family:'Montserrat',sans-serif;font-weight:800;font-size:.8rem;color:#fff;
     background:linear-gradient(150deg,var(--primary),var(--deep));
@@ -107,20 +109,20 @@
   .hero .cta{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2rem;}
 
   /* ---------- brand lockup + sparkles (front-page logo) ---------- */
-  .lockup{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;
+  .lockup{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;
     padding:.5rem 0 2.5rem;margin-bottom:clamp(2rem,5vw,3.5rem);
     border-bottom:1px solid var(--line);}
-  .lockup .sparkles{position:absolute;left:50%;top:-1.5rem;transform:translateX(-50%);
-    width:min(700px,94vw);height:calc(100% + 1.5rem);
+  .lockup .sparkles{position:absolute;left:-4rem;top:-1.5rem;
+    width:min(560px,94vw);height:calc(100% + 1.5rem);
     -webkit-mask-image:radial-gradient(62% 68% at 50% 40%, #000 18%, transparent 80%);
             mask-image:radial-gradient(62% 68% at 50% 40%, #000 18%, transparent 80%);}
-  .lockup__inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+  .lockup__inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;}
   .lockup__logo{width:min(360px,72vw);height:auto;
     filter:drop-shadow(0 10px 34px rgba(138,92,246,.45)) drop-shadow(0 0 46px rgba(138,92,246,.3));}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
     clip:rect(0,0,0,0);white-space:nowrap;border:0;}
   .lockup__lines{position:relative;z-index:1;width:min(560px,88vw);height:6px;margin-top:1.3rem;}
-  .lockup__lines .l{position:absolute;top:0;left:50%;transform:translateX(-50%);}
+  .lockup__lines .l{position:absolute;top:0;left:0;}
   .lockup__lines .l1{width:75%;height:2px;filter:blur(3px);background:linear-gradient(90deg,transparent,var(--primary),transparent);}
   .lockup__lines .l2{width:75%;height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);}
   .lockup__lines .l3{width:26%;height:5px;filter:blur(4px);background:linear-gradient(90deg,transparent,var(--violet),transparent);}
@@ -296,34 +298,6 @@
   .about .powered .claude .wm{font-family:Georgia,'Times New Roman',serif;font-weight:500;color:#F4F4F1;}
   .about .powered .hf .wm{font-family:'Montserrat',sans-serif;font-weight:600;color:#D3F84E;}
 
-  /* ---------- testimonials / clients ---------- */
-  .tag-head{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:800;
-    font-style:italic;text-transform:uppercase;letter-spacing:.04em;
-    font-size:clamp(1.5rem,3.4vw,2.1rem);color:#fff;
-    background:linear-gradient(120deg,var(--primary),var(--deep));
-    padding:.35rem .9rem .4rem;border-radius:6px;
-    box-shadow:0 12px 34px -12px rgba(138,92,246,.6);}
-  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.9rem;
-    margin-top:clamp(3rem,6vw,4.5rem);}
-  @media(max-width:900px){.quotes{grid-template-columns:1fr;max-width:460px;gap:4.5rem;}}
-  .tcard{position:relative;background:var(--violet);color:#171b28;
-    padding:1.9rem 1.75rem;border-radius:34px;margin-bottom:3.75rem;
-    box-shadow:0 30px 60px -30px rgba(138,92,246,.5);}
-  .tcard:nth-child(1){border-bottom-left-radius:6px;}
-  .tcard:nth-child(2){border-top-right-radius:6px;}
-  .tcard:nth-child(3){border-bottom-right-radius:6px;}
-  .tcard blockquote{margin:0;font-size:.95rem;line-height:1.6;font-weight:500;}
-  .tcard blockquote::before{content:"\201C";}
-  .tcard blockquote::after{content:"\201D";}
-  .tcard figcaption{display:flex;align-items:flex-end;justify-content:flex-end;
-    min-height:64px;margin-top:1.4rem;}
-  .tcard .avatar{position:absolute;left:1.25rem;bottom:-3rem;
-    width:104px;height:104px;border-radius:50%;object-fit:cover;
-    border:5px solid var(--bg);box-shadow:0 0 0 2px var(--primary), 0 16px 30px -10px rgba(0,0,0,.6);}
-  .tcard .name{text-align:right;font-family:'Montserrat',sans-serif;font-weight:800;
-    text-transform:uppercase;letter-spacing:-0.01em;line-height:1.12;
-    font-size:1.05rem;color:#12141d;}
-
   /* ---------- cta + contact form ---------- */
   .final{max-width:var(--maxw);margin:0 auto clamp(4rem,8vw,6rem);padding:clamp(2.5rem,6vw,4rem) var(--pad);
     border:1px solid var(--line-strong);border-radius:22px;
@@ -369,6 +343,22 @@
   .foot-inner .social a:hover{color:var(--text);}
   .copyright{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad) 2rem;font-size:.76rem;color:var(--faint);}
 
+
+  /* ---------- intro: logo appears centered, then travels to the hero's left ---------- */
+  #intro{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;animation:introFail .01s 6s forwards;}
+  .intro__bg{position:absolute;inset:0;opacity:1;transition:opacity .9s ease;
+    background:radial-gradient(48% 40% at 50% 50%, rgba(138,92,246,.22), transparent 70%), var(--bg);}
+  .intro__logo{position:relative;width:min(560px,78vw);height:auto;will-change:transform;
+    filter:drop-shadow(0 10px 34px rgba(138,92,246,.45)) drop-shadow(0 0 46px rgba(138,92,246,.3));
+    animation:introIn .9s var(--ease) both;}
+  @keyframes introIn{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
+  @keyframes introFail{to{visibility:hidden;}}
+  html.intro-on{overflow:hidden;}
+  html.intro-on .lockup,html.intro-on .lockup.reveal{transition:none;transform:none;}
+  .lockup .sparkles,.lockup__lines{transition:opacity .8s ease;}
+  html.intro-on .lockup__logo,html.intro-on .lockup .sparkles,html.intro-on .lockup__lines{opacity:0;}
+
   /* ---------- load reveal (one orchestrated moment) ---------- */
   .reveal{opacity:0;transform:translateY(14px);}
   .reveal.in{opacity:1;transform:none;transition:opacity .7s ease, transform .8s var(--ease);}
@@ -381,11 +371,16 @@
     .aurora .pulse{animation:none;opacity:.5;}
     .rec i{animation:none;}
     .reveal{opacity:1;transform:none;transition:none;}
+    #intro{display:none;}
     .btn:hover,.card:hover{transform:none;}
   }
 </style>
 </head>
 <body>
+  <div id="intro" aria-hidden="true">
+    <div class="intro__bg"></div>
+    <img class="intro__logo" src="brand guidlines/logo.png" alt="" />
+  </div>
 
   <div class="aurora" aria-hidden="true">
     <canvas id="beams"></canvas>
@@ -397,7 +392,7 @@
 
     <nav class="nav">
       <div class="nav-inner">
-        <a href="#top" class="brand"><span class="mark">JP</span> Jan Paolo Violanda</a>
+        <a href="#top" class="brand"><img class="brand__logo" src="brand guidlines/logo.png" alt="" /> Jan Paolo Violanda</a>
         <div class="nav-links">
           <a href="#work">Work</a>
           <a href="#services">Services</a>
@@ -409,17 +404,6 @@
     </nav>
 
     <header class="hero" id="top">
-      <div class="lockup reveal">
-        <canvas class="sparkles" id="sparkles"></canvas>
-        <div class="lockup__inner">
-          <img class="lockup__logo" src="brand guidlines/logo.png" alt="JP — Jan Paolo Violanda, AI Video Editor" />
-          <span class="sr-only">Jan Paolo Violanda — AI Video Editor</span>
-        </div>
-        <div class="lockup__lines" aria-hidden="true">
-          <span class="l l1"></span><span class="l l2"></span>
-          <span class="l l3"></span><span class="l l4"></span>
-        </div>
-      </div>
       <p class="rec reveal d1"><i></i> REC &nbsp;·&nbsp; 3840×2160 &nbsp;·&nbsp; 24fps</p>
       <h1 class="reveal d1">Raw footage in. Video worth watching out.</h1>
       <p class="lede reveal d2">I make AI-assisted reels — script, voiceover, b-roll, and captions — cut for retention and turned around fast.</p>
@@ -921,36 +905,6 @@
       </div>
     </section>
 
-    <section class="section" id="clients">
-      <span class="tag-head">Clients :</span>
-      <div class="quotes">
-        <figure class="tcard">
-          <blockquote>Amazing edit! Paolo is a great editor and brings ideas to my business — he helps me create amazing ads for my social media.</blockquote>
-          <figcaption>
-            <img class="avatar" src="clients/anthony.jpg" alt="Anthony Del Rio" loading="lazy"
-                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=faces'" />
-            <span class="name">Anthony<br>Del Rio</span>
-          </figcaption>
-        </figure>
-        <figure class="tcard">
-          <blockquote>Paolo gets pacing in a way most editors don't. Our retention held flat past the first month of reels — that never used to happen.</blockquote>
-          <figcaption>
-            <img class="avatar" src="clients/alex.jpg" alt="Alex Afanasiev" loading="lazy"
-                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&h=240&fit=crop&crop=faces'" />
-            <span class="name">Alex<br>Afanasiev</span>
-          </figcaption>
-        </figure>
-        <figure class="tcard">
-          <blockquote>Incredible edits! Paolo isn't just a skilled editor — he's a real contributor to my business. His creative ideas lift every ad we run.</blockquote>
-          <figcaption>
-            <img class="avatar" src="clients/nora.jpg" alt="Nora Ashton" loading="lazy"
-                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&h=240&fit=crop&crop=faces'" />
-            <span class="name">Nora<br>Ashton</span>
-          </figcaption>
-        </figure>
-      </div>
-    </section>
-
     <section class="final" id="contact">
       <div class="final-grid">
         <div class="intro">
@@ -1016,14 +970,53 @@
 
       // ---- hero load reveal ----
       var items = document.querySelectorAll('.reveal');
-      if(reduce){
-        items.forEach(function(el){ el.classList.add('in'); });
-      } else {
+      function startReveal(){
         requestAnimationFrame(function(){
           requestAnimationFrame(function(){
             items.forEach(function(el){ el.classList.add('in'); });
           });
         });
+      }
+
+      // ---- intro: logo shows centered, then fades away so the page can scroll ----
+      var introEl = document.getElementById('intro');
+      var introOn = !!introEl && !reduce && window.scrollY < 40;
+      if(reduce){
+        items.forEach(function(el){ el.classList.add('in'); });
+      } else if(!introOn){
+        startReveal();
+      }
+      if(introEl && !introOn){ introEl.remove(); }
+      if(introOn){
+        var root = document.documentElement;
+        var logo = introEl.querySelector('.intro__logo');
+        var bg = introEl.querySelector('.intro__bg');
+        var landed = false;
+        root.classList.add('intro-on');
+        window.scrollTo(0,0);
+
+        var done = function(){
+          if(landed) return;
+          landed = true;
+          root.classList.remove('intro-on');
+          introEl.remove();
+        };
+        var vanish = function(){
+          logo.style.animation = 'none';
+          bg.style.opacity = '0';
+          startReveal();
+          var out = logo.animate([
+            { opacity: 1, transform: 'none' },
+            { opacity: 0, transform: 'scale(1.08)' }
+          ], { duration: 800, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+          out.finished.then(done, done);
+          setTimeout(done, 1600);
+        };
+        var ready = new Promise(function(res){
+          if(logo.complete){ res(); } else { logo.addEventListener('load', res); logo.addEventListener('error', res); }
+          setTimeout(res, 2000);
+        });
+        ready.then(function(){ setTimeout(vanish, 1500); });
       }
 
       // ---- videos reveal only once they can play ----
